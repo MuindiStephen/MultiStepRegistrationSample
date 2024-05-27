@@ -8,7 +8,7 @@ import com.example.multistepregistrationsample.data.FarmerRegistrationData
 
 @Dao
 interface FarmerRegistrationDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFarmerRegistration(farmerRegistrationData: FarmerRegistrationData)
 
     @Query("SELECT * FROM farmer_registration WHERE id = :id")

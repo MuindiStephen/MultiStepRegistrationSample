@@ -13,8 +13,13 @@ interface ApiService {
 
     @POST("create")
     suspend fun saveFarmerRegData(
-        @Body apiRequestBody: ApiRequestBody
+        @Body apiRequestBody: List<ApiRequestBody>
     ): FarmerRegistrationAPIResponse
+
+    interface ApiService {
+        @POST("sync-data-batch")
+        suspend fun syncDataBatch(@Body apiRequestBodies: List<ApiRequestBody>)
+    }
 
 
     companion object {

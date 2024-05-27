@@ -8,6 +8,7 @@ import com.example.multistepregistrationsample.data.api.ApiService.Companion.BAS
 import com.example.multistepregistrationsample.data.repo.FarmerRepository
 import com.example.multistepregistrationsample.data.room.AppDatabase
 import com.example.multistepregistrationsample.data.room.FarmerRegistrationDao
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -70,6 +71,8 @@ class AppModule {
             .setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
+
+
     @Singleton
     @Provides
     fun providesConverterFactory(): Converter.Factory {
@@ -93,4 +96,5 @@ class AppModule {
     fun providesApiService(retrofit: Retrofit) : ApiService{
         return retrofit.create(ApiService::class.java)
     }
+
 }

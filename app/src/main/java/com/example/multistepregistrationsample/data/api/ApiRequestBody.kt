@@ -1,5 +1,7 @@
 package com.example.multistepregistrationsample.data.api
 
+import androidx.room.Entity
+
 /**
  * Defined a data class that will define structure of API request body
  */

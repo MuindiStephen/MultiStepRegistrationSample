@@ -88,6 +88,18 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.1")
+
+    // work manager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.concurrent:concurrent-futures-ktx:1.1.0")
+    implementation("androidx.concurrent:concurrent-futures:1.1.0")
+
+    // hilt with Worker manager
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    // When using Kotlin.
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    implementation("androidx.work:work-runtime:2.9.0")
+
 }
 // Allow references to generated code
 kapt {

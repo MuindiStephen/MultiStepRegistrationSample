@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.multistepregistrationsample.data.FarmerRegistrationData
 import com.example.multistepregistrationsample.data.api.ApiRequestBody
 import com.example.multistepregistrationsample.data.api.ApiService
+import com.example.multistepregistrationsample.data.mappers.toApiRequestBody
 import com.example.multistepregistrationsample.data.responses.FarmerRegistrationAPIResponse
 import com.example.multistepregistrationsample.data.room.AppDatabase
 import com.example.multistepregistrationsample.data.room.FarmerRegistrationDao
@@ -17,32 +18,36 @@ class FarmerRepository @Inject constructor(
 
     // save to offline room data storage
     suspend fun saveFarmerRegistrationOffline(farmerRegistrationData: FarmerRegistrationData) {
-         farmerRegistrationDao.insertFarmerRegistration(farmerRegistrationData)
+        farmerRegistrationDao.insertFarmerRegistration(farmerRegistrationData)
     }
 
-    private suspend fun getAllFarmerRegistrations(): List<FarmerRegistrationData> {
+    suspend fun getAllFarmerRegistrations(): List<FarmerRegistrationData> {
         return farmerRegistrationDao.getAllFarmerRegistrations()
     }
 
-    suspend fun saveFarmerRegOnline(apiRequestBody: ApiRequestBody): FarmerRegistrationAPIResponse {
+    suspend fun saveFarmerRegOnline(apiRequestBody: List<ApiRequestBody>): FarmerRegistrationAPIResponse {
         return apiService.saveFarmerRegData(apiRequestBody)
     }
 
     // sync data to online api
     suspend fun syncOfflineData() {
         val offlineData = farmerRegistrationDao.getAllFarmerRegistrations()
+
+        val req = offlineData.map { toApiRequestBody(it) }
         for (data in offlineData) {
             try {
-                // send offline data as requestBody to api
-                /*
-                val response = saveFarmerRegOnline(data)
 
-                if (response.status == "success") {
-                    Log.d("FarmerRepo successful ==0","${response.message}\n" +
-                            "${response.data}")
+              //  apiService.saveFarmerRegData(req)
+
+                val respose = apiService.saveFarmerRegData(req)
+
+                if (respose.status == "success") {
+                    Log.d("FarmerRepo successful ==0","${respose.message}\n" +
+                            "${respose.data}")
+                } else {
+                    Log.d("FarmerRepo successful ==1","failed to process request")
                 }
 
-                 */
             } catch (e: Exception) {
                 Log.d("FarmerRepo failed ==1","${e.message}")
             }

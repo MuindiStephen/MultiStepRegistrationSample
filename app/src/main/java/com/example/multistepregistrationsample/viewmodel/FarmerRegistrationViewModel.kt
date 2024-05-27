@@ -11,9 +11,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.multistepregistrationsample.data.ContactDetails
 import com.example.multistepregistrationsample.data.FarmerDetails
 import com.example.multistepregistrationsample.data.FarmerRegistrationData
+import com.example.multistepregistrationsample.data.mappers.toApiRequestBody
 import com.example.multistepregistrationsample.data.repo.FarmerRepository
+import com.example.multistepregistrationsample.data.workmanager.enqueueSyncWork
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import javax.inject.Inject
@@ -64,9 +69,17 @@ class FarmerRegistrationViewModel @Inject constructor(
                         farmerRepository.saveFarmerRegistrationOffline(farmerData)
                         _registrationResult.value = Result.success(farmerData)
                         Log.e("VM","Farmer Reg: SUCCESS")
+                        Log.e("VM", "DEVICE ONLINE")
 
-                        farmerRepository.saveFarmerRegOnline(farmerData)
-                       // syncOfflineData()
+                      //  farmerRepository.saveFarmerRegOnline(listOf(toApiRequestBody(farmerData)))
+
+//                        CoroutineScope(Dispatchers.IO).launch {
+//                            delay(2000L)
+//                            syncOfflineData()
+//                        }
+
+                        enqueueSyncWork(context)
+
                     }catch (e: Exception) {
                         Log.e("VM, FARMER REG","FAILED  ${e.message}")
                     }
@@ -108,14 +121,12 @@ class FarmerRegistrationViewModel @Inject constructor(
         return activeNetwork?.isConnected == true
     }
 
-    private fun syncOfflineData() {
+     fun syncOfflineData() {
         viewModelScope.launch {
             try {
                 farmerRepository.syncOfflineData()
-                Log.e("Viewmodel Sync data to api","== \n\n ====")
-                Log.e("Viewmodel Sync data to api","Device online: SYNC SUCCESS")
             }catch (e: Exception) {
-                Log.e("Viewmodel Sync data to api","failed sync: DEVICE OFFLINE")
+                Log.e("Viewmodel","failed sync")
             }
         }
     }
