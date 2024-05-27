@@ -13,7 +13,7 @@ interface ApiService {
 
     @POST("create")
     suspend fun saveFarmerRegData(
-        @Body apiRequestBody: List<ApiRequestBody>
+        @Body apiRequestBody: ApiRequestBody
     ): FarmerRegistrationAPIResponse
 
     interface ApiService {

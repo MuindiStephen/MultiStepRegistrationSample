@@ -124,7 +124,7 @@ class FarmerRegistrationViewModel @Inject constructor(
      fun syncOfflineData() {
         viewModelScope.launch {
             try {
-                farmerRepository.syncOfflineData()
+               // farmerRepository.syncOfflineData()
             }catch (e: Exception) {
                 Log.e("Viewmodel","failed sync")
             }

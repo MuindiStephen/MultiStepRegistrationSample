@@ -25,11 +25,12 @@ class FarmerRepository @Inject constructor(
         return farmerRegistrationDao.getAllFarmerRegistrations()
     }
 
-    suspend fun saveFarmerRegOnline(apiRequestBody: List<ApiRequestBody>): FarmerRegistrationAPIResponse {
+    // Back-up or sync farmer data
+    suspend fun saveFarmerRegOnline(apiRequestBody: ApiRequestBody): FarmerRegistrationAPIResponse {
         return apiService.saveFarmerRegData(apiRequestBody)
     }
 
-    // sync data to online api
+    /**
     suspend fun syncOfflineData() {
         val offlineData = farmerRegistrationDao.getAllFarmerRegistrations()
 
@@ -53,4 +54,5 @@ class FarmerRepository @Inject constructor(
             }
         }
     }
+    */
 }

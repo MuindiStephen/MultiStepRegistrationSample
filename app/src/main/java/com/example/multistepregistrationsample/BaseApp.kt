@@ -20,9 +20,7 @@ class BaseApp : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-
+        enqueueSyncWork(applicationContext)
         Log.e("APP LAUNCHES","WORK MANAGER INITIATED"+enqueueSyncWork(applicationContext))
-
-
     }
 }
