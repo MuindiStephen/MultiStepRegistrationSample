@@ -16,11 +16,9 @@ import com.example.multistepregistrationsample.data.repo.FarmerRepository
 import com.example.multistepregistrationsample.data.workmanager.enqueueSyncWork
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,11 +56,8 @@ class FarmerRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
 
 
-
-
-
-
                 if (isOnline(context = context)) {
+                    val attempts: Int =0
 
                     try {
                         val farmerData = _farmerRegistrationData.value!!
@@ -71,46 +66,32 @@ class FarmerRegistrationViewModel @Inject constructor(
                         Log.e("VM","Farmer Reg: SUCCESS")
                         Log.e("VM", "DEVICE ONLINE")
 
-                      //  farmerRepository.saveFarmerRegOnline(listOf(toApiRequestBody(farmerData)))
+                        // Also save farmer online - Api if connected to network
+                        farmerRepository.saveFarmerRegOnline(toApiRequestBody(farmerData))
 
-//                        CoroutineScope(Dispatchers.IO).launch {
-//                            delay(2000L)
-//                            syncOfflineData()
-//                        }
+                        viewModelScope.launch {
+                            delay(5000L)
+                            enqueueSyncWork(context)
+                        }
 
-                        enqueueSyncWork(context)
 
                     }catch (e: Exception) {
-                        Log.e("VM, FARMER REG","FAILED  ${e.message}")
+
+                        if (e is HttpException && e.code() == 429 && attempts <= 3) {
+                            val retryAfter = e.response()?.headers()?.get("Retry-After")?.toLongOrNull() ?: "Default"
+                            Log.i("VM", "Retrying after $retryAfter seconds...")
+                            delay(3000L)
+                            enqueueSyncWork(context)
+                        } else {
+                            Log.e("VM", "Online SAVE FAILED: ${e.message}")
+                            _registrationResult.value = Result.failure(e)
+                        }
                     }
                 } else {
                     val farmerData = _farmerRegistrationData.value!!
                     farmerRepository.saveFarmerRegistrationOffline(farmerData)
                     _registrationResult.value = Result.success(farmerData)
                 }
-           /* if (isOnline(context)) {
-                try {
-                    farmerRepository.saveFarmerRegistrationOffline(farmerData)
-                    _registrationResult.value = Result.success(null)
-                   // val response = farmerRepository.registerMilkSupplierOnline(farmerData)
-                  //  _registrationResult.value = Result.success(response)
-
-                    syncOfflineData()
-                } catch (e: Exception) {
-                    _registrationResult.value = Result.failure(e)
-                }
-
-
-            } else {
-                try {
-                   farmerRepository.saveFarmerRegistrationOffline(farmerData)
-                    _registrationResult.value = Result.success(null)
-                } catch (e: Exception) {
-                    _registrationResult.value = Result.failure(e)
-                }
-            }
-
-            */
         }
     }
 

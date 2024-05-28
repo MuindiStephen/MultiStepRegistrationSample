@@ -1,14 +1,18 @@
 package com.example.multistepregistrationsample.data.repo
 
 import android.util.Log
+import androidx.work.ListenableWorker
 import com.example.multistepregistrationsample.data.FarmerRegistrationData
 import com.example.multistepregistrationsample.data.api.ApiRequestBody
 import com.example.multistepregistrationsample.data.api.ApiService
 import com.example.multistepregistrationsample.data.mappers.toApiRequestBody
 import com.example.multistepregistrationsample.data.responses.FarmerRegistrationAPIResponse
-import com.example.multistepregistrationsample.data.room.AppDatabase
 import com.example.multistepregistrationsample.data.room.FarmerRegistrationDao
-import okhttp3.ResponseBody
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FarmerRepository @Inject constructor(
@@ -25,34 +29,44 @@ class FarmerRepository @Inject constructor(
         return farmerRegistrationDao.getAllFarmerRegistrations()
     }
 
-    // Back-up or sync farmer data
+    // save farmer to api when online
     suspend fun saveFarmerRegOnline(apiRequestBody: ApiRequestBody): FarmerRegistrationAPIResponse {
+
+        val response = apiService.saveFarmerRegData(apiRequestBody)
+        if (response.status == "success")
+        {
+            Log.e("FarmerRepository","Successful")
+        } else {
+            Log.e("FarmerRepository","Failed")
+        }
         return apiService.saveFarmerRegData(apiRequestBody)
     }
 
-    /**
+    // back-up or sync farmer offline data [local] to api when online
+    suspend fun syncData(apiRequestBody: ApiRequestBody): FarmerRegistrationAPIResponse {
+        return apiService.syncDataBatch(apiRequestBody)
+    }
+
+
+
+    /*
     suspend fun syncOfflineData() {
-        val offlineData = farmerRegistrationDao.getAllFarmerRegistrations()
+        delay(5000L)
+        CoroutineScope(Dispatchers.IO).launch {
+            val farmerDataList = farmerRegistrationDao.getAllFarmerRegistrations()
 
-        val req = offlineData.map { toApiRequestBody(it) }
-        for (data in offlineData) {
-            try {
-
-              //  apiService.saveFarmerRegData(req)
-
-                val respose = apiService.saveFarmerRegData(req)
-
-                if (respose.status == "success") {
-                    Log.d("FarmerRepo successful ==0","${respose.message}\n" +
-                            "${respose.data}")
+            farmerDataList.forEach { farmerRegistrationData ->
+                val request = toApiRequestBody(farmerRegistrationData)
+                val response = syncData(request)
+                if (response.status=="success") {
+                    ListenableWorker.Result.success()
                 } else {
-                    Log.d("FarmerRepo successful ==1","failed to process request")
+                    ListenableWorker.Result.Retry.failure()
                 }
-
-            } catch (e: Exception) {
-                Log.d("FarmerRepo failed ==1","${e.message}")
             }
         }
     }
-    */
+
+     */
+
 }

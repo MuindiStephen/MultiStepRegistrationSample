@@ -11,15 +11,17 @@ import retrofit2.http.POST
  */
 interface ApiService {
 
+    // save farmer online
     @POST("create")
     suspend fun saveFarmerRegData(
         @Body apiRequestBody: ApiRequestBody
     ): FarmerRegistrationAPIResponse
 
-    interface ApiService {
-        @POST("sync-data-batch")
-        suspend fun syncDataBatch(@Body apiRequestBodies: List<ApiRequestBody>)
-    }
+
+    @POST("create")
+    suspend fun syncDataBatch(
+        @Body apiRequestBodies: ApiRequestBody
+    ): FarmerRegistrationAPIResponse
 
 
     companion object {

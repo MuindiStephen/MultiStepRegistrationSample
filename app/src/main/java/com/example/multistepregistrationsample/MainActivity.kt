@@ -9,7 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import com.example.multistepregistrationsample.data.workmanager.enqueueSyncWork
 import com.example.multistepregistrationsample.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +32,6 @@ class MainActivity : AppCompatActivity() {
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
-        enqueueSyncWork(this)
 
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.fragmentContainerView)

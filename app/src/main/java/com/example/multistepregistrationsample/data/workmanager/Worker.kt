@@ -34,7 +34,7 @@ class SyncWorker @AssistedInject constructor(
 
                  farmerDataList.forEach { farmerRegistrationData ->
                      val request = toApiRequestBody(farmerRegistrationData)
-                     val response = farmerRepository.saveFarmerRegOnline(request)
+                     val response = farmerRepository.syncData(request)
                      if (response.status=="success") {
                          Result.success()
                      } else {

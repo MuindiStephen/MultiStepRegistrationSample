@@ -10,7 +10,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.multistepregistrationsample.R
 import com.example.multistepregistrationsample.data.FarmerDetails
-import com.example.multistepregistrationsample.data.workmanager.enqueueSyncWork
 import com.example.multistepregistrationsample.databinding.FragmentFarmerDetailsBinding
 import com.example.multistepregistrationsample.viewmodel.FarmerRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,11 +27,7 @@ class FarmerDetailsFragment : Fragment() {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        //viewModel.syncOfflineData()
-        enqueueSyncWork(requireContext())
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
